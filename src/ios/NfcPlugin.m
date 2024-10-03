@@ -301,8 +301,8 @@
     NSLog(@"shouldUseTagReaderSession %d", self.shouldUseTagReaderSession);
     NSLog(@"callbackOnSessionStart %d", self.sendCallbackOnSessionStart);
     NSLog(@"returnTagInCallback %d", self.returnTagInCallback);
-    NSLog(@"returnTagInEvent %d", self.returnTagInEvent);
-    
+    NSLog(@"returnTagInEvent %d", self.returnTagInEvent);  
+
     if (@available(iOS 13.0, *)) {
         
         if (self.shouldUseTagReaderSession) {
@@ -314,15 +314,15 @@
             NSLog(@"Using NFCNDEFReaderSession");
             self.nfcSession = [[NFCNDEFReaderSession alloc]initWithDelegate:self queue:nil invalidateAfterFirstRead:TRUE];
         }
-        sessionCallbackId = [command.callbackId copy];
-        self.nfcSession.alertMessage = [self localizeString:@"NFCHoldNearTag" defaultValue:@"Hold near NFC tag to scan."];
+        sessionCallbackId = [command.callbackId copy]; 
+        self.nfcSession.alertMessage = NSLocalizedStringFromTable(@"NFCHoldNearTag", @"InfoPlist", nil);
         [self.nfcSession beginSession];
         
     } else if (@available(iOS 11.0, *)) {
         NSLog(@"iOS < 13, using NFCNDEFReaderSession");
         self.nfcSession = [[NFCNDEFReaderSession alloc]initWithDelegate:self queue:nil invalidateAfterFirstRead:TRUE];
-        sessionCallbackId = [command.callbackId copy];
-        self.nfcSession.alertMessage = [self localizeString:@"NFCHoldNearTag" defaultValue:@"Hold near NFC tag to scan."];
+        sessionCallbackId = [command.callbackId copy]; 
+        self.nfcSession.alertMessage = NSLocalizedStringFromTable(@"NFCHoldNearTag", @"InfoPlist", nil);
         [self.nfcSession beginSession];
     } else {
         NSLog(@"iOS < 11, no NFC support");
