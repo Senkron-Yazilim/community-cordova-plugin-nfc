@@ -136,7 +136,7 @@
         }
     }
 
-    self.nfcSession.alertMessage = [self localizeString:@"NFCHoldNearWritableTag" defaultValue:@"Hold near writable NFC tag to update."];
+    self.nfcSession.alertMessage = NSLocalizedStringFromTable(@"NFCHoldNearWritableTag", @"InfoPlist", nil);
     sessionCallbackId = [command.callbackId copy];
 
     if (reusingSession) {                   // reusing a read session to write
@@ -205,7 +205,7 @@
 - (void) readerSession:(NFCNDEFReaderSession *)session didDetectNDEFs:(NSArray<NFCNDEFMessage *> *)messages API_AVAILABLE(ios(11.0)) {
     NSLog(@"NFCNDEFReaderSession didDetectNDEFs");
     
-    session.alertMessage = [self localizeString:@"NFCTagRead" defaultValue:@"Tag successfully read."];
+    session.alertMessage = NSLocalizedStringFromTable(@"NFCTagRead", @"InfoPlist", nil);
     for (NFCNDEFMessage *message in messages) {
         [self fireNdefEvent: message];
     }
@@ -215,7 +215,7 @@
 - (void) readerSession:(NFCNDEFReaderSession *)session didDetectTags:(NSArray<__kindof id<NFCNDEFTag>> *)tags API_AVAILABLE(ios(13.0)) {
     
     if (tags.count > 1) {
-        session.alertMessage = [self localizeString:@"NFCMoreThanOneTag" defaultValue:@"More than 1 tag detected. Please remove all tags and try again."];
+        session.alertMessage = NSLocalizedStringFromTable(@"NFCMoreThanOneTag", @"InfoPlist", nil);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
             NSLog(@"restaring polling");
             [session restartPolling];
@@ -228,7 +228,7 @@
     [session connectToTag:tag completionHandler:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"%@", error);
-            [self closeSession:session withError:[self localizeString:@"NFCErrorTagConnection" defaultValue:@"Error connecting to tag."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCErrorTagConnection", @"InfoPlist", nil)];
             return;
         }
         
@@ -263,7 +263,7 @@
     NSLog(@"tagReaderSession didDetectTags");
     
     if (tags.count > 1) {
-        session.alertMessage = [self localizeString:@"NFCMoreThanOneTag" defaultValue:@"More than 1 tag detected. Please remove all tags and try again."];
+        session.alertMessage = NSLocalizedStringFromTable(@"NFCMoreThanOneTag", @"InfoPlist", nil);
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
             NSLog(@"restaring polling");
             [session restartPolling];
@@ -278,7 +278,7 @@
     [session connectToTag:tag completionHandler:^(NSError * _Nullable error) {
         if (error) {
             NSLog(@"%@", error);
-            [self closeSession:session withError:[self localizeString:@"NFCErrorTagConnection" defaultValue:@"Error connecting to tag."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCErrorTagConnection", @"InfoPlist", nil)];
             return;
         }
 
@@ -342,7 +342,7 @@
     [tag queryNDEFStatusWithCompletionHandler:^(NFCNDEFStatus status, NSUInteger capacity, NSError * _Nullable error) {
         if (error) {
             NSLog(@"%@", error);
-            [self closeSession:session withError:[self localizeString:@"NFCErrorTagStatus" defaultValue:@"Error getting tag status."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCErrorTagStatus", @"InfoPlist", nil)];
             return;
         }
                 
@@ -380,11 +380,11 @@
         // Error Code=403 "NDEF tag does not contain any NDEF message" is not an error for this plugin
         if (error && error.code != 403) {
             NSLog(@"%@", error);
-            [self closeSession:session withError:[self localizeString:@"NFCDataReadFailed" defaultValue:@"Read Failed."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCDataReadFailed", @"InfoPlist", nil)];
             return;
         } else {
             NSLog(@"%@", message);
-            session.alertMessage = [self localizeString:@"NFCTagRead" defaultValue:@"Tag successfully read."];
+            session.alertMessage = NSLocalizedStringFromTable(@"NFCTagRead", @"InfoPlist", nil);
             [self fireNdefEvent:message metaData:metaData];
             [self closeSession:session];
         }
@@ -396,19 +396,19 @@
 - (void)writeNDEFTag:(NFCReaderSession * _Nonnull)session status:(NFCNDEFStatus)status tag:(id<NFCNDEFTag>)tag  API_AVAILABLE(ios(13.0)){
     switch (status) {
         case NFCNDEFStatusNotSupported:
-            [self closeSession:session withError:[self localizeString:@"NFCNotNdefCompliant" defaultValue:@"Tag is not NDEF compliant."]];  // alternate message "Tag does not support NDEF."
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCNotNdefCompliant", @"InfoPlist", nil)];  // alternate message "Tag does not support NDEF."
             break;
         case NFCNDEFStatusReadOnly:
-            [self closeSession:session withError:[self localizeString:@"NFCReadOnlyTag" defaultValue:@"Tag is read only."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCReadOnlyTag", @"InfoPlist", nil)];
             break;
         case NFCNDEFStatusReadWrite: {
             
             [tag writeNDEF: self.messageToWrite completionHandler:^(NSError * _Nullable error) {
                 if (error) {
                     NSLog(@"%@", error);
-                    [self closeSession:session withError:[self localizeString:@"NFCDataWriteFailed" defaultValue:@"Write failed."]];
+                    [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCDataWriteFailed", @"InfoPlist", nil)];
                 } else {
-                    session.alertMessage = [self localizeString:@"NFCDataWrote" defaultValue:@"Wrote data to NFC tag."];
+                    session.alertMessage = NSLocalizedStringFromTable(@"NFCDataWrote", @"InfoPlist", nil);
                     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:self->sessionCallbackId];
                     [self closeSession:session];
@@ -418,7 +418,7 @@
             
         }
         default:
-            [self closeSession:session withError:[self localizeString:@"NFCUnknownNdefTag" defaultValue:@"Unknown NDEF tag status."]];
+            [self closeSession:session withError: NSLocalizedStringFromTable(@"NFCUnknownNdefTag", @"InfoPlist", nil)];
     }
 }
 
@@ -625,3 +625,4 @@
 }
 
 @end
+
